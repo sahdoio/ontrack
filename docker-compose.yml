@@ -1,0 +1,127 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ontrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-ontrack}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ontrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ontrack-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ontrack-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: development
+    container_name: ontrack-backend
+    restart: unless-stopped
+    env_file:
+      - ./apps/core/.env
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/core:/app:delegated
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ontrack-network
+    command: npm run start:dev
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      target: development
+    container_name: ontrack-frontend
+    restart: unless-stopped
+    env_file:
+      - ./apps/front/.env.local
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./apps/front:/app:delegated
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - ontrack-network
+    command: npm run dev
+
+  # ========================================
+  # LocalStack (Optional - for AWS services locally)
+  # Uncomment if you want to test AWS services locally
+  # ========================================
+  # localstack:
+  #   image: localstack/localstack:latest
+  #   container_name: ontrack-localstack
+  #   environment:
+  #     SERVICES: s3,sns,sqs
+  #     EDGE_PORT: 4566
+  #     DEFAULT_REGION: us-east-1
+  #   ports:
+  #     - "4566:4566"
+  #   volumes:
+  #     - localstack_data:/tmp/localstack
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - ontrack-network
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  # localstack_data:
+  #   driver: local
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  ontrack-network:
+    driver: bridge

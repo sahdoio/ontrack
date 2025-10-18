@@ -1,0 +1,349 @@
+{
+  "info": {
+    "name": "OnTrack API",
+    "description": "OnTrack - Peer-to-Peer Payment Splitter API\n\nA backend system for splitting expenses among group members using Clean Architecture + DDD.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "ontrack-api"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "groupId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "expenseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "settlementId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Check if the API is running"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Group Management",
+      "item": [
+        {
+          "name": "Create Group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('groupId', jsonData.data.id);",
+                  "    pm.collectionVariables.set('memberId', jsonData.data.members[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Beach Trip 2025\",\n  \"memberNames\": [\n    \"Alice\",\n    \"Bob\",\n    \"Charlie\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups"]
+            },
+            "description": "Create a new group with members"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Group Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}"]
+            },
+            "description": "Get details of a specific group"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Member to Group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('memberId', jsonData.data.memberId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberName\": \"David\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "members"]
+            },
+            "description": "Add a new member to an existing group"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Expense Management",
+      "item": [
+        {
+          "name": "Record Expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('expenseId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payerId\": \"{{memberId}}\",\n  \"name\": \"Dinner at Restaurant\",\n  \"amountInCents\": 15000,\n  \"splitEqually\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "expenses"]
+            },
+            "description": "Record a new expense for the group. Amount is in cents (15000 = $150.00)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Group Expenses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "expenses"]
+            },
+            "description": "Get all expenses for a specific group"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Balance Calculation",
+      "item": [
+        {
+          "name": "Calculate Group Balances",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/balances/calculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "balances", "calculate"]
+            },
+            "description": "Calculate balances for all members in the group"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Group Balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/balances",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "balances"]
+            },
+            "description": "Get current balances for all members in the group"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/members/{{memberId}}/balance",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "members", "{{memberId}}", "balance"]
+            },
+            "description": "Get balance for a specific member"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Settlement",
+      "item": [
+        {
+          "name": "Record Settlement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('settlementId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payerId\": \"{{memberId}}\",\n  \"receiverId\": \"{{memberId}}\",\n  \"amountInCents\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/settlements",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "settlements"]
+            },
+            "description": "Record a debt settlement between two members. Amount is in cents (5000 = $50.00)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Group Settlements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/settlements",
+              "host": ["{{baseUrl}}"],
+              "path": ["groups", "{{groupId}}", "settlements"]
+            },
+            "description": "Get all settlements for a specific group"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "File Processing",
+      "item": [
+        {
+          "name": "Upload Expense CSV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "groupId",
+                  "value": "{{groupId}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/file-processing/upload-csv",
+              "host": ["{{baseUrl}}"],
+              "path": ["file-processing", "upload-csv"]
+            },
+            "description": "Upload a CSV file with batch expenses"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
