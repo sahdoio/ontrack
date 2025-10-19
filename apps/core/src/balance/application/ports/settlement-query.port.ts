@@ -3,9 +3,7 @@ import { Money } from '../../../shared/domain/value-objects/money.vo';
 
 // Port for querying settlements from Balance context
 export interface ISettlementQueryPort {
-  findByGroupId(
-    groupId: GroupId,
-  ): Promise<
+  findByGroupId(groupId: GroupId): Promise<
     Array<{
       payerId: MemberId;
       receiverId: MemberId;

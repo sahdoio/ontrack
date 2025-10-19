@@ -38,7 +38,10 @@ export class SplitCalculator {
     return splits;
   }
 
-  public static validateSplits(totalAmount: Money, splits: ExpenseSplit[]): boolean {
+  public static validateSplits(
+    totalAmount: Money,
+    splits: ExpenseSplit[],
+  ): boolean {
     if (splits.length === 0) {
       return false;
     }

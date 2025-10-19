@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ISettlementRepository } from '../../domain/repositories/settlement.repository.interface';
 import { Settlement } from '../../domain/entities/settlement.entity';
-import { SettlementId, GroupId, MemberId } from '../../../shared/domain/value-objects/id.vo';
+import {
+  SettlementId,
+  GroupId,
+  MemberId,
+} from '../../../shared/domain/value-objects/id.vo';
 import { Money } from '../../../shared/domain/value-objects/money.vo';
 import { SettlementEntity } from '../../../shared/infrastructure/database/entities/settlement.entity';
 

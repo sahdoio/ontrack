@@ -4,7 +4,9 @@ class MemberBalanceDto {
   @ApiProperty()
   memberId: string;
 
-  @ApiProperty({ description: 'Balance in cents (positive = owed, negative = owes)' })
+  @ApiProperty({
+    description: 'Balance in cents (positive = owed, negative = owes)',
+  })
   balanceInCents: number;
 
   @ApiProperty()

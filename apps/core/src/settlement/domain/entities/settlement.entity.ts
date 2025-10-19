@@ -1,5 +1,9 @@
 import { AggregateRoot } from '../../../shared/domain/value-objects/aggregate-root.base';
-import { SettlementId, GroupId, MemberId } from '../../../shared/domain/value-objects/id.vo';
+import {
+  SettlementId,
+  GroupId,
+  MemberId,
+} from '../../../shared/domain/value-objects/id.vo';
 import { Money } from '../../../shared/domain/value-objects/money.vo';
 import { InvalidArgumentException } from '../../../shared/domain/exceptions/invalid-argument.exception';
 import { DomainException } from '../../../shared/domain/exceptions/domain.exception';
@@ -38,12 +42,16 @@ export class Settlement extends AggregateRoot<SettlementId> {
   ): Settlement {
     // Invariant: Amount must be positive
     if (amount.isZero()) {
-      throw new InvalidArgumentException('Settlement amount must be greater than zero');
+      throw new InvalidArgumentException(
+        'Settlement amount must be greater than zero',
+      );
     }
 
     // Invariant: Payer ≠ Receiver
     if (payerId.equals(receiverId)) {
-      throw new InvalidArgumentException('Payer and receiver cannot be the same person');
+      throw new InvalidArgumentException(
+        'Payer and receiver cannot be the same person',
+      );
     }
 
     // Validate payer and receiver are group members

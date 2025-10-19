@@ -18,7 +18,9 @@ export class BalanceRepository implements IBalanceRepository {
 
   async save(balance: Balance): Promise<void> {
     // Delete existing balances for this group
-    await this.balanceEntityRepository.delete({ groupId: balance.groupId.value });
+    await this.balanceEntityRepository.delete({
+      groupId: balance.groupId.value,
+    });
 
     // Save new balances
     const balanceEntities = balance.memberBalances.map((memberBalance) => {
@@ -52,9 +54,15 @@ export class BalanceRepository implements IBalanceRepository {
     await this.balanceEntityRepository.delete({ groupId: groupId.value });
   }
 
-  private toDomain(groupId: GroupId, balanceEntities: BalanceEntity[]): Balance {
+  private toDomain(
+    groupId: GroupId,
+    balanceEntities: BalanceEntity[],
+  ): Balance {
     const memberBalances = balanceEntities.map((entity) =>
-      MemberBalance.create(MemberId.create(entity.memberId), Money.fromCents(entity.balance)),
+      MemberBalance.create(
+        MemberId.create(entity.memberId),
+        Money.fromCents(entity.balance),
+      ),
     );
 
     const lastCalculatedAt = balanceEntities[0]?.lastCalculatedAt || new Date();

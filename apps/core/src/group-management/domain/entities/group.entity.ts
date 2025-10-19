@@ -12,20 +12,31 @@ export class Group extends AggregateRoot<GroupId> {
   private _members: Member[];
   private readonly _createdAt: Date;
 
-  private constructor(id: GroupId, name: string, members: Member[], createdAt: Date) {
+  private constructor(
+    id: GroupId,
+    name: string,
+    members: Member[],
+    createdAt: Date,
+  ) {
     super(id);
     this._name = name;
     this._members = members;
     this._createdAt = createdAt;
   }
 
-  public static create(name: string, initialMembers: Member[], id?: GroupId): Group {
+  public static create(
+    name: string,
+    initialMembers: Member[],
+    id?: GroupId,
+  ): Group {
     if (!name || name.trim().length === 0) {
       throw new InvalidArgumentException('Group name cannot be empty');
     }
 
     if (name.trim().length > 200) {
-      throw new InvalidArgumentException('Group name cannot exceed 200 characters');
+      throw new InvalidArgumentException(
+        'Group name cannot exceed 200 characters',
+      );
     }
 
     // Invariant: Must have at least 2 members
@@ -37,12 +48,19 @@ export class Group extends AggregateRoot<GroupId> {
     const memberNames = initialMembers.map((m) => m.name.toLowerCase());
     const uniqueNames = new Set(memberNames);
     if (memberNames.length !== uniqueNames.size) {
-      throw new InvalidArgumentException('Group cannot have duplicate member names');
+      throw new InvalidArgumentException(
+        'Group cannot have duplicate member names',
+      );
     }
 
     const groupId = id || GroupId.create();
     const createdAt = new Date();
-    const group = new Group(groupId, name.trim(), [...initialMembers], createdAt);
+    const group = new Group(
+      groupId,
+      name.trim(),
+      [...initialMembers],
+      createdAt,
+    );
 
     // Emit domain event
     group.addDomainEvent(
@@ -83,7 +101,9 @@ export class Group extends AggregateRoot<GroupId> {
     }
 
     if (name.trim().length > 200) {
-      throw new InvalidArgumentException('Group name cannot exceed 200 characters');
+      throw new InvalidArgumentException(
+        'Group name cannot exceed 200 characters',
+      );
     }
 
     this._name = name.trim();
@@ -96,14 +116,22 @@ export class Group extends AggregateRoot<GroupId> {
     }
 
     // Invariant: No duplicate names
-    if (this._members.some((m) => m.name.toLowerCase() === member.name.toLowerCase())) {
-      throw new InvalidArgumentException('A member with this name already exists in the group');
+    if (
+      this._members.some(
+        (m) => m.name.toLowerCase() === member.name.toLowerCase(),
+      )
+    ) {
+      throw new InvalidArgumentException(
+        'A member with this name already exists in the group',
+      );
     }
 
     this._members.push(member);
 
     // Emit domain event
-    this.addDomainEvent(new MemberAddedToGroup(this.id.value, member.id.value, member.name));
+    this.addDomainEvent(
+      new MemberAddedToGroup(this.id.value, member.id.value, member.name),
+    );
   }
 
   public removeMember(memberId: MemberId): void {
@@ -115,7 +143,9 @@ export class Group extends AggregateRoot<GroupId> {
 
     // Invariant: Must have at least 2 members
     if (this._members.length <= 2) {
-      throw new DomainException('Cannot remove member. Group must have at least 2 members');
+      throw new DomainException(
+        'Cannot remove member. Group must have at least 2 members',
+      );
     }
 
     const removedMember = this._members[memberIndex];
@@ -123,7 +153,11 @@ export class Group extends AggregateRoot<GroupId> {
 
     // Emit domain event
     this.addDomainEvent(
-      new MemberRemovedFromGroup(this.id.value, removedMember.id.value, removedMember.name),
+      new MemberRemovedFromGroup(
+        this.id.value,
+        removedMember.id.value,
+        removedMember.name,
+      ),
     );
   }
 

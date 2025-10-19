@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { RecordExpenseRequestDto } from '../dto/record-expense.request.dto';
 import { RecordExpenseResponseDto } from '../dto/record-expense.response.dto';
@@ -18,7 +26,11 @@ export class ExpenseController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Record a new expense' })
   @ApiParam({ name: 'groupId', description: 'Group ID (UUID)' })
-  @ApiResponse({ status: 201, description: 'Expense recorded successfully', type: RecordExpenseResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Expense recorded successfully',
+    type: RecordExpenseResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input' })
   @ApiResponse({ status: 404, description: 'Group not found' })
   async recordExpense(
@@ -48,9 +60,15 @@ export class ExpenseController {
   @Get()
   @ApiOperation({ summary: 'List all expenses for a group' })
   @ApiParam({ name: 'groupId', description: 'Group ID (UUID)' })
-  @ApiResponse({ status: 200, description: 'Expenses retrieved', type: ListExpensesResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Expenses retrieved',
+    type: ListExpensesResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Group not found' })
-  async listExpenses(@Param('groupId') groupId: string): Promise<ListExpensesResponseDto> {
+  async listExpenses(
+    @Param('groupId') groupId: string,
+  ): Promise<ListExpensesResponseDto> {
     const result = await this.listGroupExpensesUseCase.execute({ groupId });
 
     return {

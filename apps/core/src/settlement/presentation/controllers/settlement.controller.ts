@@ -1,7 +1,18 @@
-import { Controller, Post, Get, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { RecordSettlementRequestDto } from '../dto/record-settlement.request.dto';
-import { SettlementResponseDto, ListSettlementsResponseDto } from '../dto/settlement.response.dto';
+import {
+  SettlementResponseDto,
+  ListSettlementsResponseDto,
+} from '../dto/settlement.response.dto';
 import { RecordSettlementUseCase } from '../../application/use-cases/record-settlement.use-case';
 import { ListSettlementsUseCase } from '../../application/use-cases/list-settlements.use-case';
 
@@ -15,10 +26,19 @@ export class SettlementController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Record a debt settlement (payment between members)' })
+  @ApiOperation({
+    summary: 'Record a debt settlement (payment between members)',
+  })
   @ApiParam({ name: 'groupId', description: 'Group ID (UUID)' })
-  @ApiResponse({ status: 201, description: 'Settlement recorded successfully', type: SettlementResponseDto })
-  @ApiResponse({ status: 400, description: 'Invalid input (e.g., payer = receiver)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Settlement recorded successfully',
+    type: SettlementResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input (e.g., payer = receiver)',
+  })
   @ApiResponse({ status: 404, description: 'Group not found' })
   async recordSettlement(
     @Param('groupId') groupId: string,
@@ -44,8 +64,14 @@ export class SettlementController {
   @Get()
   @ApiOperation({ summary: 'List all settlements for a group' })
   @ApiParam({ name: 'groupId', description: 'Group ID (UUID)' })
-  @ApiResponse({ status: 200, description: 'Settlements retrieved', type: ListSettlementsResponseDto })
-  async listSettlements(@Param('groupId') groupId: string): Promise<ListSettlementsResponseDto> {
+  @ApiResponse({
+    status: 200,
+    description: 'Settlements retrieved',
+    type: ListSettlementsResponseDto,
+  })
+  async listSettlements(
+    @Param('groupId') groupId: string,
+  ): Promise<ListSettlementsResponseDto> {
     const result = await this.listSettlementsUseCase.execute({ groupId });
 
     return {

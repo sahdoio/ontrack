@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { ExpenseSplitEntity } from './expense-split.entity';
 
 @Entity('expenses')
@@ -21,6 +27,8 @@ export class ExpenseEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @OneToMany(() => ExpenseSplitEntity, (split) => split.expense, { cascade: true })
+  @OneToMany(() => ExpenseSplitEntity, (split) => split.expense, {
+    cascade: true,
+  })
   splits: ExpenseSplitEntity[];
 }

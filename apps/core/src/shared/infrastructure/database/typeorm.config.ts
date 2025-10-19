@@ -7,7 +7,9 @@ import { ExpenseSplitEntity } from './entities/expense-split.entity';
 import { SettlementEntity } from './entities/settlement.entity';
 import { BalanceEntity } from './entities/balance.entity';
 
-export const getTypeOrmConfig = (configService: ConfigService): DataSourceOptions => ({
+export const getTypeOrmConfig = (
+  configService: ConfigService,
+): DataSourceOptions => ({
   type: 'postgres',
   host: configService.get('DB_HOST', 'localhost'),
   port: configService.get('DB_PORT', 5432),

@@ -6,7 +6,10 @@ export class BalanceCalculated implements IDomainEvent {
 
   constructor(
     public readonly groupId: string,
-    public readonly memberBalances: Array<{ memberId: string; balance: number }>,
+    public readonly memberBalances: Array<{
+      memberId: string;
+      balance: number;
+    }>,
   ) {
     this.occurredOn = new Date();
   }

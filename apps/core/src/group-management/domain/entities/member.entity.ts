@@ -18,7 +18,9 @@ export class Member extends Entity<MemberId> {
     }
 
     if (name.trim().length > 100) {
-      throw new InvalidArgumentException('Member name cannot exceed 100 characters');
+      throw new InvalidArgumentException(
+        'Member name cannot exceed 100 characters',
+      );
     }
 
     const memberId = id || MemberId.create();
@@ -27,7 +29,11 @@ export class Member extends Entity<MemberId> {
     return new Member(memberId, name.trim(), joinedAt);
   }
 
-  public static reconstitute(id: MemberId, name: string, joinedAt: Date): Member {
+  public static reconstitute(
+    id: MemberId,
+    name: string,
+    joinedAt: Date,
+  ): Member {
     return new Member(id, name, joinedAt);
   }
 
@@ -45,7 +51,9 @@ export class Member extends Entity<MemberId> {
     }
 
     if (name.trim().length > 100) {
-      throw new InvalidArgumentException('Member name cannot exceed 100 characters');
+      throw new InvalidArgumentException(
+        'Member name cannot exceed 100 characters',
+      );
     }
 
     this._name = name.trim();

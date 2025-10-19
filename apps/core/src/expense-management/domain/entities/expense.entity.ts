@@ -1,5 +1,9 @@
 import { AggregateRoot } from '../../../shared/domain/value-objects/aggregate-root.base';
-import { ExpenseId, GroupId, MemberId } from '../../../shared/domain/value-objects/id.vo';
+import {
+  ExpenseId,
+  GroupId,
+  MemberId,
+} from '../../../shared/domain/value-objects/id.vo';
 import { Money } from '../../../shared/domain/value-objects/money.vo';
 import { ExpenseSplit } from '../../../shared/domain/value-objects/expense-split.vo';
 import { InvalidArgumentException } from '../../../shared/domain/exceptions/invalid-argument.exception';
@@ -54,11 +58,16 @@ export class Expense extends AggregateRoot<ExpenseId> {
 
     // Invariant: Amount must be positive
     if (amount.isZero()) {
-      throw new InvalidArgumentException('Expense amount must be greater than zero');
+      throw new InvalidArgumentException(
+        'Expense amount must be greater than zero',
+      );
     }
 
     // Invariant: Splits must sum to total amount
-    const totalSplits = splits.reduce((sum, split) => sum.add(split.amount), Money.zero(amount.currency));
+    const totalSplits = splits.reduce(
+      (sum, split) => sum.add(split.amount),
+      Money.zero(amount.currency),
+    );
     if (!totalSplits.equals(amount)) {
       throw new DomainException(
         `Splits must sum to total amount. Expected: ${amount.toString()}, Got: ${totalSplits.toString()}`,
@@ -73,13 +82,23 @@ export class Expense extends AggregateRoot<ExpenseId> {
     // Invariant: All split members must be group members
     for (const split of splits) {
       if (!groupMemberIds.some((id) => id.equals(split.memberId))) {
-        throw new DomainException('All split members must be members of the group');
+        throw new DomainException(
+          'All split members must be members of the group',
+        );
       }
     }
 
     const expenseId = id || ExpenseId.create();
     const createdAt = new Date();
-    const expense = new Expense(expenseId, groupId, payerId, name.trim(), amount, splits, createdAt);
+    const expense = new Expense(
+      expenseId,
+      groupId,
+      payerId,
+      name.trim(),
+      amount,
+      splits,
+      createdAt,
+    );
 
     // Emit domain event
     expense.addDomainEvent(
@@ -89,7 +108,10 @@ export class Expense extends AggregateRoot<ExpenseId> {
         payerId.value,
         name.trim(),
         amount.amount,
-        splits.map((s) => ({ memberId: s.memberId.value, amount: s.amount.amount })),
+        splits.map((s) => ({
+          memberId: s.memberId.value,
+          amount: s.amount.amount,
+        })),
       ),
     );
 
@@ -138,7 +160,9 @@ export class Expense extends AggregateRoot<ExpenseId> {
     }
 
     if (name.trim().length > 200) {
-      throw new InvalidArgumentException('Expense name cannot exceed 200 characters');
+      throw new InvalidArgumentException(
+        'Expense name cannot exceed 200 characters',
+      );
     }
 
     this._name = name.trim();

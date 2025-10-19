@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RecordExpenseInputDto, RecordExpenseOutputDto } from '../dto/record-expense.dto';
+import {
+  RecordExpenseInputDto,
+  RecordExpenseOutputDto,
+} from '../dto/record-expense.dto';
 import { EXPENSE_REPOSITORY } from '../../domain/repositories/expense.repository.interface';
 import type { IExpenseRepository } from '../../domain/repositories/expense.repository.interface';
 import { GROUP_QUERY_PORT } from '../ports/group-repository.port';

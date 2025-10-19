@@ -1,5 +1,8 @@
 import { Settlement } from '../entities/settlement.entity';
-import { SettlementId, GroupId } from '../../../shared/domain/value-objects/id.vo';
+import {
+  SettlementId,
+  GroupId,
+} from '../../../shared/domain/value-objects/id.vo';
 
 export interface ISettlementRepository {
   save(settlement: Settlement): Promise<void>;

@@ -23,7 +23,10 @@ export class Balance extends AggregateRoot<GroupId> {
     this._lastCalculatedAt = lastCalculatedAt;
   }
 
-  public static create(groupId: GroupId, memberBalances: MemberBalance[]): Balance {
+  public static create(
+    groupId: GroupId,
+    memberBalances: MemberBalance[],
+  ): Balance {
     const lastCalculatedAt = new Date();
     const balance = new Balance(groupId, memberBalances, lastCalculatedAt);
 

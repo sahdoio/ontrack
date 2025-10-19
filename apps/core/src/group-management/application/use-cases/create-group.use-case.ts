@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateGroupInputDto, CreateGroupOutputDto } from '../dto/create-group.dto';
+import {
+  CreateGroupInputDto,
+  CreateGroupOutputDto,
+} from '../dto/create-group.dto';
 import { GROUP_REPOSITORY } from '../../domain/repositories/group.repository.interface';
 import type { IGroupRepository } from '../../domain/repositories/group.repository.interface';
 import { Member } from '../../domain/entities/member.entity';
@@ -27,7 +30,9 @@ export class CreateGroupUseCase {
     }
 
     // Create members
-    const members: Member[] = input.memberNames.map((name) => Member.create(name));
+    const members: Member[] = input.memberNames.map((name) =>
+      Member.create(name),
+    );
 
     // Create group aggregate
     const group = Group.create(input.name, members);

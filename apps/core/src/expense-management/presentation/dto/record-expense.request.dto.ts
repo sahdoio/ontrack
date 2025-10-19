@@ -1,4 +1,14 @@
-import { IsString, IsNotEmpty, IsInt, Min, IsOptional, IsBoolean, IsArray, ValidateNested, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsInt,
+  Min,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -14,7 +24,10 @@ class CustomSplitDto {
 }
 
 export class RecordExpenseRequestDto {
-  @ApiProperty({ example: 'member-uuid-456', description: 'ID of member who paid' })
+  @ApiProperty({
+    example: 'member-uuid-456',
+    description: 'ID of member who paid',
+  })
   @IsUUID()
   payerId: string;
 
@@ -23,17 +36,26 @@ export class RecordExpenseRequestDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 5000, description: 'Total amount in cents (e.g., 5000 = $50.00)' })
+  @ApiProperty({
+    example: 5000,
+    description: 'Total amount in cents (e.g., 5000 = $50.00)',
+  })
   @IsInt()
   @Min(1)
   amountInCents: number;
 
-  @ApiPropertyOptional({ example: true, description: 'Split equally among all members' })
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Split equally among all members',
+  })
   @IsOptional()
   @IsBoolean()
   splitEqually?: boolean;
 
-  @ApiPropertyOptional({ type: [CustomSplitDto], description: 'Custom splits (if not splitting equally)' })
+  @ApiPropertyOptional({
+    type: [CustomSplitDto],
+    description: 'Custom splits (if not splitting equally)',
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

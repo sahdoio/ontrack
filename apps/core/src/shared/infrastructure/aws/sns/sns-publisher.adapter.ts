@@ -13,12 +13,18 @@ export class SNSPublisherAdapter {
     this.snsClient = new SNSClient({
       region: this.configService.get<string>('aws.region') || 'us-east-1',
       credentials: {
-        accessKeyId: this.configService.get<string>('aws.credentials.accessKeyId') || 'test',
-        secretAccessKey: this.configService.get<string>('aws.credentials.secretAccessKey') || 'test',
+        accessKeyId:
+          this.configService.get<string>('aws.credentials.accessKeyId') ||
+          'test',
+        secretAccessKey:
+          this.configService.get<string>('aws.credentials.secretAccessKey') ||
+          'test',
       },
     });
 
-    this.topicArn = this.configService.get<string>('aws.sns.topicArn') || 'arn:aws:sns:us-east-1:000000000000:ontrack-events';
+    this.topicArn =
+      this.configService.get<string>('aws.sns.topicArn') ||
+      'arn:aws:sns:us-east-1:000000000000:ontrack-events';
   }
 
   async publish(event: IDomainEvent): Promise<void> {

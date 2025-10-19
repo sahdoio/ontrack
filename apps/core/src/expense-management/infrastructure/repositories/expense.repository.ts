@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IExpenseRepository } from '../../domain/repositories/expense.repository.interface';
 import { Expense } from '../../domain/entities/expense.entity';
-import { ExpenseId, GroupId, MemberId } from '../../../shared/domain/value-objects/id.vo';
+import {
+  ExpenseId,
+  GroupId,
+  MemberId,
+} from '../../../shared/domain/value-objects/id.vo';
 import { Money } from '../../../shared/domain/value-objects/money.vo';
 import { ExpenseSplit } from '../../../shared/domain/value-objects/expense-split.vo';
 import { ExpenseEntity } from '../../../shared/infrastructure/database/entities/expense.entity';

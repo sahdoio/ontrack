@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListSettlementsInputDto, ListSettlementsOutputDto } from '../dto/list-settlements.dto';
+import {
+  ListSettlementsInputDto,
+  ListSettlementsOutputDto,
+} from '../dto/list-settlements.dto';
 import { SETTLEMENT_REPOSITORY } from '../../domain/repositories/settlement.repository.interface';
 import type { ISettlementRepository } from '../../domain/repositories/settlement.repository.interface';
 import { GroupId } from '../../../shared/domain/value-objects/id.vo';
@@ -11,7 +14,9 @@ export class ListSettlementsUseCase {
     private readonly settlementRepository: ISettlementRepository,
   ) {}
 
-  async execute(input: ListSettlementsInputDto): Promise<ListSettlementsOutputDto> {
+  async execute(
+    input: ListSettlementsInputDto,
+  ): Promise<ListSettlementsOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
     // Load all settlements

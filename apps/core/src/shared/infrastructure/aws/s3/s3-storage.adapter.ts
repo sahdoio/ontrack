@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { IS3StoragePort } from '../../../../file-processing/application/ports/s3-storage.port';
 
 @Injectable()
@@ -12,15 +17,24 @@ export class S3StorageAdapter implements IS3StoragePort {
     this.s3Client = new S3Client({
       region: this.configService.get<string>('aws.region') || 'us-east-1',
       credentials: {
-        accessKeyId: this.configService.get<string>('aws.credentials.accessKeyId') || 'test',
-        secretAccessKey: this.configService.get<string>('aws.credentials.secretAccessKey') || 'test',
+        accessKeyId:
+          this.configService.get<string>('aws.credentials.accessKeyId') ||
+          'test',
+        secretAccessKey:
+          this.configService.get<string>('aws.credentials.secretAccessKey') ||
+          'test',
       },
     });
 
-    this.bucketName = this.configService.get<string>('aws.s3.bucketName') || 'ontrack-uploads';
+    this.bucketName =
+      this.configService.get<string>('aws.s3.bucketName') || 'ontrack-uploads';
   }
 
-  async upload(key: string, buffer: Buffer, contentType?: string): Promise<void> {
+  async upload(
+    key: string,
+    buffer: Buffer,
+    contentType?: string,
+  ): Promise<void> {
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,

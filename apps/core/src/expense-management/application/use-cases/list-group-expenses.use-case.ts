@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListGroupExpensesInputDto, ListGroupExpensesOutputDto } from '../dto/list-expenses.dto';
+import {
+  ListGroupExpensesInputDto,
+  ListGroupExpensesOutputDto,
+} from '../dto/list-expenses.dto';
 import { EXPENSE_REPOSITORY } from '../../domain/repositories/expense.repository.interface';
 import type { IExpenseRepository } from '../../domain/repositories/expense.repository.interface';
 import { GroupId } from '../../../shared/domain/value-objects/id.vo';
@@ -12,7 +15,9 @@ export class ListGroupExpensesUseCase {
     private readonly expenseRepository: IExpenseRepository,
   ) {}
 
-  async execute(input: ListGroupExpensesInputDto): Promise<ListGroupExpensesOutputDto> {
+  async execute(
+    input: ListGroupExpensesInputDto,
+  ): Promise<ListGroupExpensesOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
     // Load all expenses for group

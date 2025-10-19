@@ -61,7 +61,8 @@ export class BalanceCalculator {
       balances.set(payerId, currentPayerBalance.subtract(settlement.amount));
 
       // Receiver received (positive for receiver)
-      const currentReceiverBalance = balances.get(receiverId) || Money.zero(currency);
+      const currentReceiverBalance =
+        balances.get(receiverId) || Money.zero(currency);
       balances.set(receiverId, currentReceiverBalance.add(settlement.amount));
     }
 

@@ -1,4 +1,7 @@
-import { ValidationPipe as NestValidationPipe, BadRequestException } from '@nestjs/common';
+import {
+  ValidationPipe as NestValidationPipe,
+  BadRequestException,
+} from '@nestjs/common';
 
 /**
  * Global Validation Pipe

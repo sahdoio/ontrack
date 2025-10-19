@@ -3,9 +3,7 @@ import { Money } from '../../../shared/domain/value-objects/money.vo';
 
 // Port for querying expenses from Balance context
 export interface IExpenseQueryPort {
-  findByGroupId(
-    groupId: GroupId,
-  ): Promise<
+  findByGroupId(groupId: GroupId): Promise<
     Array<{
       payerId: MemberId;
       amount: Money;

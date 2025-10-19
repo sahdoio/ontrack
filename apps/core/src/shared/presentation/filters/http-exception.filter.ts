@@ -1,4 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { InvalidArgumentException } from '../../domain/exceptions/invalid-argument.exception';
@@ -26,7 +33,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (exceptionResponse as any).message || exception.message;
         errors = (exceptionResponse as any).errors;
       } else {
-        message = exceptionResponse as string;
+        message = exceptionResponse;
       }
     } else if (exception instanceof InvalidArgumentException) {
       // Domain validation errors -> 400 Bad Request

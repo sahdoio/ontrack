@@ -33,7 +33,9 @@ export class CalculateGroupBalancesUseCase {
     private readonly eventBus: IEventBus,
   ) {}
 
-  async execute(input: CalculateGroupBalancesInputDto): Promise<CalculateGroupBalancesOutputDto> {
+  async execute(
+    input: CalculateGroupBalancesInputDto,
+  ): Promise<CalculateGroupBalancesOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
     // Get all member IDs

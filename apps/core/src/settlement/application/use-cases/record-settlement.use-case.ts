@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RecordSettlementInputDto, RecordSettlementOutputDto } from '../dto/record-settlement.dto';
+import {
+  RecordSettlementInputDto,
+  RecordSettlementOutputDto,
+} from '../dto/record-settlement.dto';
 import { SETTLEMENT_REPOSITORY } from '../../domain/repositories/settlement.repository.interface';
 import type { ISettlementRepository } from '../../domain/repositories/settlement.repository.interface';
 import { GROUP_QUERY_PORT } from '../ports/group-query.port';
@@ -21,7 +24,9 @@ export class RecordSettlementUseCase {
     private readonly eventBus: IEventBus,
   ) {}
 
-  async execute(input: RecordSettlementInputDto): Promise<RecordSettlementOutputDto> {
+  async execute(
+    input: RecordSettlementInputDto,
+  ): Promise<RecordSettlementOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
     // Get all member IDs
@@ -34,7 +39,13 @@ export class RecordSettlementUseCase {
     const amount = Money.fromCents(input.amountInCents);
 
     // Create settlement aggregate (enforces invariants)
-    const settlement = Settlement.create(groupId, payerId, receiverId, amount, memberIds);
+    const settlement = Settlement.create(
+      groupId,
+      payerId,
+      receiverId,
+      amount,
+      memberIds,
+    );
 
     // Persist
     await this.settlementRepository.save(settlement);

@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsArray, ArrayMinSize, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ArrayMinSize,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGroupRequestDto {
@@ -9,7 +16,10 @@ export class CreateGroupRequestDto {
   @MaxLength(200)
   name: string;
 
-  @ApiProperty({ example: ['Alice', 'Bob', 'Charlie'], description: 'Initial member names' })
+  @ApiProperty({
+    example: ['Alice', 'Bob', 'Charlie'],
+    description: 'Initial member names',
+  })
   @IsArray()
   @ArrayMinSize(2, { message: 'Group must have at least 2 members' })
   @IsString({ each: true })

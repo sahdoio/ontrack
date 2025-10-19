@@ -54,7 +54,9 @@ export class Money extends ValueObject<Money> {
     this.ensureSameCurrency(other);
     const result = this._amount - other._amount;
     if (result < 0) {
-      throw new InvalidArgumentException('Subtraction would result in negative amount');
+      throw new InvalidArgumentException(
+        'Subtraction would result in negative amount',
+      );
     }
     return new Money(result, this._currency);
   }

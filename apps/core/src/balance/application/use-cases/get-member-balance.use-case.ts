@@ -14,7 +14,9 @@ export class GetMemberBalanceUseCase {
     private readonly balanceRepository: IBalanceRepository,
   ) {}
 
-  async execute(input: GetMemberBalanceInputDto): Promise<GetMemberBalanceOutputDto> {
+  async execute(
+    input: GetMemberBalanceInputDto,
+  ): Promise<GetMemberBalanceOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
     // Load balance
