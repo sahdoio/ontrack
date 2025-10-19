@@ -162,7 +162,20 @@ logs-redis:
 	$(DC) logs -f --tail=100 redis
 
 log:
-	$(DC_EXEC) tail -f /app/logs/application.log -n 50 || echo "No application log file found"
+	@echo "Tailing application log file..."
+	@$(DC_EXEC) tail -f /app/logs/application.log -n 100 2>/dev/null || echo "No application log file found yet. Make sure the backend is running."
+
+log-local:
+	@echo "Tailing local application log file..."
+	@tail -f apps/core/logs/application.log -n 100 2>/dev/null || echo "No application log file found yet. Make sure the backend has started at least once."
+
+log-clear:
+	@echo "Clearing application log file..."
+	@$(DC_EXEC) rm -f /app/logs/application.log && echo "Log file cleared" || echo "Could not clear log file"
+
+log-clear-local:
+	@echo "Clearing local application log file..."
+	@rm -f apps/core/logs/application.log && echo "Log file cleared" || echo "No log file to clear"
 
 lint:
 	@echo "Running linter..."
@@ -180,6 +193,14 @@ lint-fix-front:
 	@echo "Fixing frontend linting issues..."
 	$(DC_EXEC_FRONT) npm run lint
 
+typecheck:
+	@echo "Checking TypeScript errors..."
+	$(DC_EXEC) npx tsc --noEmit
+
+typecheck-front:
+	@echo "Checking frontend TypeScript errors..."
+	$(DC_EXEC_FRONT) npx tsc --noEmit
+
 format:
 	@echo "Formatting code..."
 	$(DC_EXEC) npm run format
@@ -188,7 +209,7 @@ format-front:
 	@echo "Formatting frontend code..."
 	$(DC_EXEC_FRONT) npm run format
 
-type-check:
+build:
 	@echo "Running type check..."
 	$(DC_EXEC) npm run build
 
@@ -213,10 +234,6 @@ clean-docker:
 	@sleep 5
 	$(DC) down -v
 	docker system prune -f
-
-build-prod:
-	@echo "Building for production..."
-	$(DC_EXEC) npm run build
 
 start-prod:
 	@echo "Starting production server..."
