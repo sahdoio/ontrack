@@ -16,9 +16,7 @@ export class ExpenseQueryAdapter implements IExpenseQueryPort {
     private readonly expenseSplitRepository: Repository<ExpenseSplitEntity>,
   ) {}
 
-  async findByGroupId(
-    groupId: GroupId,
-  ): Promise<
+  async findByGroupId(groupId: GroupId): Promise<
     Array<{
       payerId: MemberId;
       amount: Money;

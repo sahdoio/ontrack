@@ -13,9 +13,7 @@ export class SettlementQueryAdapter implements ISettlementQueryPort {
     private readonly settlementRepository: Repository<SettlementEntity>,
   ) {}
 
-  async findByGroupId(
-    groupId: GroupId,
-  ): Promise<
+  async findByGroupId(groupId: GroupId): Promise<
     Array<{
       payerId: MemberId;
       receiverId: MemberId;

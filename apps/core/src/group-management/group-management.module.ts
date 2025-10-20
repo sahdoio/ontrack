@@ -6,8 +6,6 @@ import { AddMemberToGroupUseCase } from './application/use-cases/add-member-to-g
 import { GetGroupDetailsUseCase } from './application/use-cases/get-group-details.use-case';
 import { GroupRepository } from './infrastructure/repositories/group.repository';
 import { GROUP_REPOSITORY } from './domain/repositories/group.repository.interface';
-import { EVENT_BUS } from './application/ports/event-bus.port';
-import { InMemoryEventBusAdapter } from '../shared/infrastructure/event-bus/in-memory-event-bus.adapter';
 import { GroupEntity } from '../shared/infrastructure/database/entities/group.entity';
 import { MemberEntity } from '../shared/infrastructure/database/entities/member.entity';
 
@@ -21,10 +19,6 @@ import { MemberEntity } from '../shared/infrastructure/database/entities/member.
     {
       provide: GROUP_REPOSITORY,
       useClass: GroupRepository,
-    },
-    {
-      provide: EVENT_BUS,
-      useClass: InMemoryEventBusAdapter,
     },
   ],
   exports: [GROUP_REPOSITORY],

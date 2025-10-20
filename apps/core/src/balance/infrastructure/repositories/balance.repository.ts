@@ -17,12 +17,10 @@ export class BalanceRepository implements IBalanceRepository {
   ) {}
 
   async save(balance: Balance): Promise<void> {
-    // Delete existing balances for this group
     await this.balanceEntityRepository.delete({
       groupId: balance.groupId.value,
     });
 
-    // Save new balances
     const balanceEntities = balance.memberBalances.map((memberBalance) => {
       const balanceEntity = new BalanceEntity();
       balanceEntity.id = uuidv4();

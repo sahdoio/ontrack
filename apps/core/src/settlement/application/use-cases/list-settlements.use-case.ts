@@ -19,10 +19,8 @@ export class ListSettlementsUseCase {
   ): Promise<ListSettlementsOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
-    // Load all settlements
     const settlements = await this.settlementRepository.findByGroupId(groupId);
 
-    // Return output DTO
     return {
       settlements: settlements.map((settlement) => ({
         id: settlement.id.value,

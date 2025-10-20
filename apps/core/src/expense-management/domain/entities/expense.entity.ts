@@ -45,7 +45,6 @@ export class Expense extends AggregateRoot<ExpenseId> {
     groupMemberIds: MemberId[],
     id?: ExpenseId,
   ): Expense {
-    // Validate name
     if (!name || name.trim().length === 0) {
       throw new InvalidArgumentException('Expense name cannot be empty');
     }
@@ -56,14 +55,12 @@ export class Expense extends AggregateRoot<ExpenseId> {
       );
     }
 
-    // Invariant: Amount must be positive
     if (amount.isZero()) {
       throw new InvalidArgumentException(
         'Expense amount must be greater than zero',
       );
     }
 
-    // Invariant: Splits must sum to total amount
     const totalSplits = splits.reduce(
       (sum, split) => sum.add(split.amount),
       Money.zero(amount.currency),
@@ -74,12 +71,10 @@ export class Expense extends AggregateRoot<ExpenseId> {
       );
     }
 
-    // Invariant: Payer must be group member
     if (!groupMemberIds.some((id) => id.equals(payerId))) {
       throw new DomainException('Payer must be a member of the group');
     }
 
-    // Invariant: All split members must be group members
     for (const split of splits) {
       if (!groupMemberIds.some((id) => id.equals(split.memberId))) {
         throw new DomainException(
@@ -100,7 +95,6 @@ export class Expense extends AggregateRoot<ExpenseId> {
       createdAt,
     );
 
-    // Emit domain event
     expense.addDomainEvent(
       new ExpenseRecorded(
         expenseId.value,
@@ -147,7 +141,7 @@ export class Expense extends AggregateRoot<ExpenseId> {
   }
 
   get splits(): ExpenseSplit[] {
-    return [...this._splits]; // Return copy
+    return [...this._splits];
   }
 
   get createdAt(): Date {

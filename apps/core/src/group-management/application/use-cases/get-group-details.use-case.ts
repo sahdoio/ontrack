@@ -17,7 +17,6 @@ export class GetGroupDetailsUseCase {
   async execute(
     input: GetGroupDetailsInputDto,
   ): Promise<GetGroupDetailsOutputDto> {
-    // Load group
     const groupId = GroupId.create(input.groupId);
     const group = await this.groupRepository.findById(groupId);
 
@@ -25,7 +24,6 @@ export class GetGroupDetailsUseCase {
       throw new Error('Group not found');
     }
 
-    // Return output DTO
     return {
       id: group.id.value,
       name: group.name,

@@ -52,6 +52,9 @@ services:
       DB_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      AWS_REGION: us-east-1
+      SQS_ENDPOINT: http://localstack:4566
+      SQS_QUEUE_URL: http://localstack:4566/000000000000/events
     ports:
       - "3000:3000"
     volumes:
@@ -62,6 +65,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      localstack:
         condition: service_healthy
     networks:
       - ontrack-network
@@ -90,24 +95,27 @@ services:
       - ontrack-network
     command: npm run dev
 
-  # ========================================
-  # LocalStack (Optional - for AWS services locally)
-  # Uncomment if you want to test AWS services locally
-  # ========================================
-  # localstack:
-  #   image: localstack/localstack:latest
-  #   container_name: ontrack-localstack
-  #   environment:
-  #     SERVICES: s3,sns,sqs
-  #     EDGE_PORT: 4566
-  #     DEFAULT_REGION: us-east-1
-  #   ports:
-  #     - "4566:4566"
-  #   volumes:
-  #     - localstack_data:/tmp/localstack
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   networks:
-  #     - ontrack-network
+  localstack:
+    image: localstack/localstack:latest
+    container_name: ontrack-localstack
+    restart: unless-stopped
+    environment:
+      SERVICES: s3,sqs
+      EDGE_PORT: 4566
+      DEFAULT_REGION: us-east-1
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/tmp/localstack
+      - ./docker/localstack:/etc/localstack/init/ready.d
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ontrack-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 # ========================================
 # Volumes
@@ -117,8 +125,8 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  # localstack_data:
-  #   driver: local
+  localstack_data:
+    driver: local
 
 # ========================================
 # Networks

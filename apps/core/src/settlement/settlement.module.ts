@@ -7,8 +7,6 @@ import { SettlementRepository } from './infrastructure/repositories/settlement.r
 import { GroupQueryAdapter } from './infrastructure/adapters/group-query.adapter';
 import { SETTLEMENT_REPOSITORY } from './domain/repositories/settlement.repository.interface';
 import { GROUP_QUERY_PORT } from './application/ports/group-query.port';
-import { EVENT_BUS } from './application/ports/event-bus.port';
-import { InMemoryEventBusAdapter } from '../shared/infrastructure/event-bus/in-memory-event-bus.adapter';
 import { SettlementEntity } from '../shared/infrastructure/database/entities/settlement.entity';
 import { GroupEntity } from '../shared/infrastructure/database/entities/group.entity';
 import { MemberEntity } from '../shared/infrastructure/database/entities/member.entity';
@@ -28,10 +26,6 @@ import { MemberEntity } from '../shared/infrastructure/database/entities/member.
     {
       provide: GROUP_QUERY_PORT,
       useClass: GroupQueryAdapter,
-    },
-    {
-      provide: EVENT_BUS,
-      useClass: InMemoryEventBusAdapter,
     },
   ],
   exports: [SETTLEMENT_REPOSITORY],

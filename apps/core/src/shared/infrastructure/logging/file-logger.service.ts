@@ -1,4 +1,4 @@
-import {ConsoleLogger, Injectable} from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ export class FileLoggerService extends ConsoleLogger {
 
   private ensureLogDirectory(): void {
     if (!fs.existsSync(this.logDir)) {
-      fs.mkdirSync(this.logDir, {recursive: true});
+      fs.mkdirSync(this.logDir, { recursive: true });
     }
   }
 

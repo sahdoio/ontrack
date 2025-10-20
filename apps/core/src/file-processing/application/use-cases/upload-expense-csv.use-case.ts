@@ -5,8 +5,8 @@ import {
 } from '../dto/upload-csv.dto';
 import { S3_STORAGE_PORT } from '../ports/s3-storage.port';
 import type { IS3StoragePort } from '../ports/s3-storage.port';
-import { EVENT_BUS } from '../ports/event-bus.port';
-import type { IEventBus } from '../ports/event-bus.port';
+import { EVENT_BUS } from '../../../shared/application/ports/event-bus.port';
+import type { IEventBus } from '../../../shared/application/ports/event-bus.port';
 import { CSVUploadStarted } from '../../domain/events/csv-upload-started.event';
 import { v4 as uuidv4 } from 'uuid';
 

@@ -24,7 +24,6 @@ export class ExpenseRepository implements IExpenseRepository {
   ) {}
 
   async save(expense: Expense): Promise<void> {
-    // Map domain entity to ORM entity
     const expenseEntity = new ExpenseEntity();
     expenseEntity.id = expense.id.value;
     expenseEntity.groupId = expense.groupId.value;
@@ -33,13 +32,10 @@ export class ExpenseRepository implements IExpenseRepository {
     expenseEntity.amount = expense.amount.amount;
     expenseEntity.createdAt = expense.createdAt;
 
-    // Save expense
     await this.expenseEntityRepository.save(expenseEntity);
 
-    // Delete existing splits
     await this.splitEntityRepository.delete({ expenseId: expense.id.value });
 
-    // Save splits
     const splitEntities = expense.splits.map((split) => {
       const splitEntity = new ExpenseSplitEntity();
       splitEntity.id = uuidv4();

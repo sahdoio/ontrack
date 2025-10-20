@@ -1,4 +1,6 @@
 export interface IDomainEvent {
-  occurredOn: Date;
+  eventId: string;
   eventName: string;
+  occurredOn: Date;
+  aggregateId: string;
 }

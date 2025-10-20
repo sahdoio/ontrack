@@ -1,6 +1,6 @@
 import { ValueObject } from './value-object.base';
 import { InvalidArgumentException } from '../exceptions/invalid-argument.exception';
-import { v4 as uuidv4, validate as isUuid } from 'uuid';
+import { v7 as uuidv7, validate as isUuid } from 'uuid';
 
 export abstract class Id extends ValueObject<Id> {
   protected readonly _value: string;
@@ -13,7 +13,8 @@ export abstract class Id extends ValueObject<Id> {
       }
       this._value = value;
     } else {
-      this._value = uuidv4();
+      // Using UUID v7 for better database performance (time-ordered)
+      this._value = uuidv7();
     }
   }
 

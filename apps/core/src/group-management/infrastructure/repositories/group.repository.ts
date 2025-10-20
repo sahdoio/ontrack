@@ -7,7 +7,6 @@ import { Member } from '../../domain/entities/member.entity';
 import { GroupId, MemberId } from '../../../shared/domain/value-objects/id.vo';
 import { GroupEntity } from '../../../shared/infrastructure/database/entities/group.entity';
 import { MemberEntity } from '../../../shared/infrastructure/database/entities/member.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GroupRepository implements IGroupRepository {
@@ -19,19 +18,15 @@ export class GroupRepository implements IGroupRepository {
   ) {}
 
   async save(group: Group): Promise<void> {
-    // Map domain entity to ORM entity
     const groupEntity = new GroupEntity();
     groupEntity.id = group.id.value;
     groupEntity.name = group.name;
     groupEntity.createdAt = group.createdAt;
 
-    // Save group
     await this.groupEntityRepository.save(groupEntity);
 
-    // Delete existing members (simple approach for updates)
     await this.memberEntityRepository.delete({ groupId: group.id.value });
 
-    // Save members
     const memberEntities = group.members.map((member) => {
       const memberEntity = new MemberEntity();
       memberEntity.id = member.id.value;
@@ -79,7 +74,6 @@ export class GroupRepository implements IGroupRepository {
   }
 
   private toDomain(groupEntity: GroupEntity): Group {
-    // Map ORM entity to domain entity
     const members = groupEntity.members.map((memberEntity) =>
       Member.reconstitute(
         MemberId.create(memberEntity.id),

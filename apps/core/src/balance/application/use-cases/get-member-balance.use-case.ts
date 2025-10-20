@@ -19,21 +19,18 @@ export class GetMemberBalanceUseCase {
   ): Promise<GetMemberBalanceOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
-    // Load balance
     const balance = await this.balanceRepository.findByGroupId(groupId);
 
     if (!balance) {
       throw new Error('Balance not calculated for this group yet');
     }
 
-    // Find member balance
     const memberBalance = balance.getMemberBalance(input.memberId);
 
     if (!memberBalance) {
       throw new Error('Member not found in group');
     }
 
-    // Return output DTO
     return {
       memberId: memberBalance.memberId.value,
       balanceInCents: memberBalance.balance.amount,

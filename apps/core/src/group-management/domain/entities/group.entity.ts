@@ -9,7 +9,7 @@ import { MemberRemovedFromGroup } from '../events/member-removed-from-group.even
 
 export class Group extends AggregateRoot<GroupId> {
   private _name: string;
-  private _members: Member[];
+  private readonly _members: Member[];
   private readonly _createdAt: Date;
 
   private constructor(
@@ -39,12 +39,10 @@ export class Group extends AggregateRoot<GroupId> {
       );
     }
 
-    // Invariant: Must have at least 2 members
     if (!initialMembers || initialMembers.length < 2) {
       throw new InvalidArgumentException('Group must have at least 2 members');
     }
 
-    // Invariant: No duplicate member names
     const memberNames = initialMembers.map((m) => m.name.toLowerCase());
     const uniqueNames = new Set(memberNames);
     if (memberNames.length !== uniqueNames.size) {
@@ -62,7 +60,6 @@ export class Group extends AggregateRoot<GroupId> {
       createdAt,
     );
 
-    // Emit domain event
     group.addDomainEvent(
       new GroupCreated(
         groupId.value,
@@ -88,7 +85,7 @@ export class Group extends AggregateRoot<GroupId> {
   }
 
   get members(): Member[] {
-    return [...this._members]; // Return a copy to prevent external modifications
+    return [...this._members];
   }
 
   get createdAt(): Date {
@@ -110,12 +107,10 @@ export class Group extends AggregateRoot<GroupId> {
   }
 
   public addMember(member: Member): void {
-    // Check if member already exists
     if (this._members.some((m) => m.id.equals(member.id))) {
       throw new DomainException('Member already exists in the group');
     }
 
-    // Invariant: No duplicate names
     if (
       this._members.some(
         (m) => m.name.toLowerCase() === member.name.toLowerCase(),
@@ -128,7 +123,6 @@ export class Group extends AggregateRoot<GroupId> {
 
     this._members.push(member);
 
-    // Emit domain event
     this.addDomainEvent(
       new MemberAddedToGroup(this.id.value, member.id.value, member.name),
     );
@@ -141,7 +135,6 @@ export class Group extends AggregateRoot<GroupId> {
       throw new DomainException('Member not found in the group');
     }
 
-    // Invariant: Must have at least 2 members
     if (this._members.length <= 2) {
       throw new DomainException(
         'Cannot remove member. Group must have at least 2 members',
@@ -151,7 +144,6 @@ export class Group extends AggregateRoot<GroupId> {
     const removedMember = this._members[memberIndex];
     this._members.splice(memberIndex, 1);
 
-    // Emit domain event
     this.addDomainEvent(
       new MemberRemovedFromGroup(
         this.id.value,

@@ -3,12 +3,6 @@ import { GroupId } from '../../../shared/domain/value-objects/id.vo';
 import { MemberBalance } from '../value-objects/member-balance.vo';
 import { BalanceCalculated } from '../events/balance-calculated.event';
 
-/**
- * Balance Aggregate Root
- *
- * This is a read model (eventually consistent) that represents
- * the current balance state for all members in a group.
- */
 export class Balance extends AggregateRoot<GroupId> {
   private _memberBalances: MemberBalance[];
   private _lastCalculatedAt: Date;
@@ -30,7 +24,6 @@ export class Balance extends AggregateRoot<GroupId> {
     const lastCalculatedAt = new Date();
     const balance = new Balance(groupId, memberBalances, lastCalculatedAt);
 
-    // Emit domain event
     balance.addDomainEvent(
       new BalanceCalculated(
         groupId.value,
@@ -57,7 +50,7 @@ export class Balance extends AggregateRoot<GroupId> {
   }
 
   get memberBalances(): MemberBalance[] {
-    return [...this._memberBalances]; // Return copy
+    return [...this._memberBalances];
   }
 
   get lastCalculatedAt(): Date {
@@ -68,7 +61,6 @@ export class Balance extends AggregateRoot<GroupId> {
     this._memberBalances = memberBalances;
     this._lastCalculatedAt = new Date();
 
-    // Emit domain event
     this.addDomainEvent(
       new BalanceCalculated(
         this.id.value,

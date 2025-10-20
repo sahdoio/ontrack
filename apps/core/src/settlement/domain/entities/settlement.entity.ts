@@ -40,21 +40,18 @@ export class Settlement extends AggregateRoot<SettlementId> {
     groupMemberIds: MemberId[],
     id?: SettlementId,
   ): Settlement {
-    // Invariant: Amount must be positive
     if (amount.isZero()) {
       throw new InvalidArgumentException(
         'Settlement amount must be greater than zero',
       );
     }
 
-    // Invariant: Payer ≠ Receiver
     if (payerId.equals(receiverId)) {
       throw new InvalidArgumentException(
         'Payer and receiver cannot be the same person',
       );
     }
 
-    // Validate payer and receiver are group members
     if (!groupMemberIds.some((id) => id.equals(payerId))) {
       throw new DomainException('Payer must be a member of the group');
     }
@@ -74,7 +71,6 @@ export class Settlement extends AggregateRoot<SettlementId> {
       createdAt,
     );
 
-    // Emit domain event
     settlement.addDomainEvent(
       new DebtSettled(
         settlementId.value,

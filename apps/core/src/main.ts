@@ -23,7 +23,7 @@ async function bootstrap() {
   );
 }
 
-bootstrap().catch((error) => {
+bootstrap().catch((error: Error) => {
   const logger = new FileLoggerService();
   logger.error('Failed to start application', error.stack, 'Bootstrap');
   process.exit(1);

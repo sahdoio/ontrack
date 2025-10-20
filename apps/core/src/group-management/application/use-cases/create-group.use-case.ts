@@ -7,8 +7,8 @@ import { GROUP_REPOSITORY } from '../../domain/repositories/group.repository.int
 import type { IGroupRepository } from '../../domain/repositories/group.repository.interface';
 import { Member } from '../../domain/entities/member.entity';
 import { Group } from '../../domain/entities/group.entity';
-import { EVENT_BUS } from '../ports/event-bus.port';
-import type { IEventBus } from '../ports/event-bus.port';
+import { EVENT_BUS } from '../../../shared/application/ports/event-bus.port';
+import type { IEventBus } from '../../../shared/application/ports/event-bus.port';
 
 @Injectable()
 export class CreateGroupUseCase {
@@ -20,7 +20,6 @@ export class CreateGroupUseCase {
   ) {}
 
   async execute(input: CreateGroupInputDto): Promise<CreateGroupOutputDto> {
-    // Validate input
     if (!input.name || input.name.trim().length === 0) {
       throw new Error('Group name is required');
     }
@@ -29,22 +28,17 @@ export class CreateGroupUseCase {
       throw new Error('At least 2 members are required');
     }
 
-    // Create members
     const members: Member[] = input.memberNames.map((name) =>
       Member.create(name),
     );
 
-    // Create group aggregate
     const group = Group.create(input.name, members);
 
-    // Persist
     await this.groupRepository.save(group);
 
-    // Publish domain events
     await this.eventBus.publishAll(group.getDomainEvents());
     group.clearDomainEvents();
 
-    // Return output DTO
     return {
       id: group.id.value,
       name: group.name,

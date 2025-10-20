@@ -20,16 +20,13 @@ export class ListGroupExpensesUseCase {
   ): Promise<ListGroupExpensesOutputDto> {
     const groupId = GroupId.create(input.groupId);
 
-    // Load all expenses for group
     const expenses = await this.expenseRepository.findByGroupId(groupId);
 
-    // Calculate total
     const totalAmount = expenses.reduce(
       (sum, expense) => sum.add(expense.amount),
       Money.zero(),
     );
 
-    // Return output DTO
     return {
       expenses: expenses.map((expense) => ({
         id: expense.id.value,
