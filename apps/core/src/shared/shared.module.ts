@@ -6,6 +6,8 @@ import { SQSConsumerService } from './infrastructure/messaging/sqs-consumer.serv
 import { IdempotencyService } from './application/services/idempotency.service';
 import { ProcessedEventEntity } from './infrastructure/database/entities/processed-event.entity';
 import { EVENT_BUS } from './application/ports/event-bus.port';
+import { S3StorageAdapter } from './infrastructure/aws/s3/s3-storage.adapter';
+import { S3_STORAGE_PORT } from '../file-processing/application/ports/s3-storage.port';
 
 @Global()
 @Module({
@@ -15,10 +17,14 @@ import { EVENT_BUS } from './application/ports/event-bus.port';
       provide: EVENT_BUS,
       useClass: SQSEventBusAdapter,
     },
+    {
+      provide: S3_STORAGE_PORT,
+      useClass: S3StorageAdapter,
+    },
     FileLoggerService,
     SQSConsumerService,
     IdempotencyService,
   ],
-  exports: [EVENT_BUS, FileLoggerService, SQSConsumerService, IdempotencyService],
+  exports: [EVENT_BUS, S3_STORAGE_PORT, FileLoggerService, SQSConsumerService, IdempotencyService],
 })
 export class SharedModule {}

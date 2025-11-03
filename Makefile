@@ -1,4 +1,4 @@
-DC=docker compose --file docker-compose.yml
+DC=docker compose --file docker-compose.yml --env-file .env
 DC_EXEC=$(DC) exec backend
 DC_EXEC_FRONT=$(DC) exec frontend
 DC_EXEC_DB=$(DC) exec postgres
@@ -161,6 +161,9 @@ logs-db:
 logs-redis:
 	$(DC) logs -f --tail=100 redis
 
+logs-localstack:
+	$(DC) logs -f --tail=100 localstack
+
 log:
 	@echo "Tailing application log file..."
 	@$(DC_EXEC) tail -f /app/logs/application.log -n 100 2>/dev/null || echo "No application log file found yet. Make sure the backend is running."
@@ -248,6 +251,49 @@ generate:
 	@read -p "Enter resource name: " name; \
 	$(DC_EXEC) nest generate resource $$name
 
+sqs-stats:
+	@echo "📊 SQS Queue Statistics:"
+	@$(DC) exec localstack awslocal sqs get-queue-attributes \
+		--queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/events \
+		--attribute-names All 2>/dev/null | python3 -m json.tool || echo "LocalStack not running"
+
+sqs-count:
+	@$(DC) exec localstack awslocal sqs get-queue-attributes \
+		--queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/events \
+		--attribute-names ApproximateNumberOfMessages 2>/dev/null | \
+		python3 -c "import sys, json; print('Messages in queue:', json.load(sys.stdin)['Attributes']['ApproximateNumberOfMessages'])" || echo "LocalStack not running"
+
+sqs-peek:
+	@echo "👀 Peeking at SQS messages:"
+	@$(DC) exec localstack awslocal sqs receive-message \
+		--queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/events \
+		--max-number-of-messages 10 2>/dev/null | python3 -m json.tool || echo "LocalStack not running"
+
+sqs-purge:
+	@echo "🗑️  Purging SQS queue..."
+	@$(DC) exec localstack awslocal sqs purge-queue \
+		--queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/events 2>/dev/null && \
+		echo "✓ Queue purged" || echo "Failed to purge queue"
+
+sqs-handlers:
+	@echo "🔧 Registered Event Handlers:"
+	@$(DC) logs backend 2>&1 | grep "Registered event handler" | tail -10
+
+sqs-recent:
+	@echo "📤 Recent Published Events:"
+	@$(DC) logs backend 2>&1 | grep "Event published to SQS" | tail -15
+	@echo ""
+	@echo "📥 Recent Processed Events:"
+	@$(DC) logs backend 2>&1 | grep "Processing message with event" | tail -15
+
+sqs-errors:
+	@echo "❌ Recent SQS Errors:"
+	@$(DC) logs backend 2>&1 | grep -i "error" | grep -i "sqs\|event" | tail -15
+
+sqs-monitor:
+	@chmod +x docker/scripts/monitor-jobs.sh 2>/dev/null || true
+	@docker/scripts/monitor-jobs.sh
+
 health:
 	@echo "Checking service health..."
 	@echo "\nDocker services:"
@@ -256,6 +302,13 @@ health:
 	@$(DC_EXEC_DB) pg_isready -U postgres || echo "PostgreSQL not ready"
 	@echo "\nRedis:"
 	@$(DC) exec redis redis-cli ping || echo "Redis not ready"
+	@echo "\nLocalStack:"
+	@curl -s http://localhost:4566/_localstack/health | python3 -c "import sys, json; data=json.load(sys.stdin); print(f\"SQS: {data['services']['sqs']}, S3: {data['services']['s3']}\")" || echo "LocalStack not ready"
+	@echo "\nSQS Queue:"
+	@$(DC) exec localstack awslocal sqs get-queue-attributes \
+		--queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/events \
+		--attribute-names ApproximateNumberOfMessages 2>/dev/null | \
+		python3 -c "import sys, json; print(f\"Messages: {json.load(sys.stdin)['Attributes']['ApproximateNumberOfMessages']}\")" || echo "Queue not accessible"
 	@echo "\nBackend:"
 	@curl -f http://localhost:3000 > /dev/null 2>&1 && echo "Backend is running" || echo "Backend not responding"
 
@@ -317,6 +370,16 @@ help:
 	@echo "  make clear           - Clear caches"
 	@echo "  make clean           - Clean and reinstall"
 	@echo "  make clean-docker    - Remove all Docker resources"
+	@echo ""
+	@echo "SQS/Event Monitoring:"
+	@echo "  make sqs-stats       - Show queue statistics"
+	@echo "  make sqs-count       - Show message count"
+	@echo "  make sqs-peek        - View messages without removing"
+	@echo "  make sqs-purge       - Clear all messages from queue"
+	@echo "  make sqs-handlers    - List registered event handlers"
+	@echo "  make sqs-recent      - Show recent events (published & processed)"
+	@echo "  make sqs-errors      - Show recent SQS errors"
+	@echo "  make sqs-monitor     - Launch interactive dashboard"
 	@echo ""
 	@echo "Other:"
 	@echo "  make health          - Check service health"

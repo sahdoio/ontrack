@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -25,7 +25,7 @@ services:
     container_name: ontrack-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -47,7 +47,7 @@ services:
       - ./apps/core/.env
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: ${BACKEND_PORT:-3000}
       DB_HOST: postgres
       DB_PORT: 5432
       REDIS_HOST: redis
@@ -56,7 +56,7 @@ services:
       SQS_ENDPOINT: http://localstack:4566
       SQS_QUEUE_URL: http://localstack:4566/000000000000/events
     ports:
-      - "3000:3000"
+      - "${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}"
     volumes:
       - ./apps/core:/app:delegated
       - ./apps/core/logs:/app/logs
@@ -83,8 +83,9 @@ services:
       - ./apps/front/.env.local
     environment:
       NODE_ENV: development
+      PORT: ${FRONTEND_PORT:-3001}
     ports:
-      - "3001:3000"
+      - "${FRONTEND_PORT:-3001}:${FRONTEND_PORT:-3001}"
     volumes:
       - ./apps/front:/app:delegated
       - /app/node_modules
@@ -103,19 +104,22 @@ services:
       SERVICES: s3,sqs
       EDGE_PORT: 4566
       DEFAULT_REGION: us-east-1
+      DEBUG: 1
+      SKIP_INFRA_DOWNLOADS: 1
     ports:
-      - "4566:4566"
+      - "${LOCALSTACK_PORT:-4566}:4566"
     volumes:
-      - localstack_data:/tmp/localstack
+      - localstack_data:/var/lib/localstack
       - ./docker/localstack:/etc/localstack/init/ready.d
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ontrack-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      test: ["CMD-SHELL", "awslocal sqs list-queues || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
 # ========================================
 # Volumes
